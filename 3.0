@@ -1,0 +1,265 @@
+javascript:(function() {
+    var botao = document.querySelector('.btn.btn-primary.float-right.ml-3');
+    
+    if (botao) {
+        botao.click();
+        
+        var nome = prompt("Digite o nome:");
+        var cpf = prompt("Digite o CPF:");
+        var dataNascimento = prompt("Digite a data de nascimento (formato DD/MM/AAAA):");
+        var mae = prompt("Digite o nome da mãe:");
+        
+        var email = gerarEmailAleatorio(nome);
+        var logradouro = "Av. Brasil";
+        
+        var numero = Math.floor(Math.random() * 8000) + 1;
+        var cep = Math.floor(Math.random() * 90000000) + 10000000;
+        cep = cep.toString().replace(/(\d{5})(\d{3})/, "$1-$2");
+        var ddd = "19";
+        var telefone = ddd + "9" + cpf.slice(-8);
+        var estados = ["SP", "RJ", "SC", "RO", "RS", "RN", "RJ", "PI", "PE", "PR", "PA", "MG", "MS", "ES", "BA", "AC", "GO", "DF"];
+        
+        var cidadesPorEstado = {
+            "SP": ["São Paulo", "Campinas", "São José dos Campos", "Ribeirão Preto", "Santo André", "Santos", "Guarulhos", "Osasco", "São Bernardo do Campo", "Sorocaba"],
+            "RJ": ["Rio de Janeiro", "Niterói", "São Gonçalo", "Duque de Caxias", "Nova Iguaçu", "Belford Roxo", "Campos dos Goytacazes", "São João de Meriti", "Petrópolis", "Volta Redonda"],
+            "SC": ["Florianópolis", "Joinville", "Blumenau", "São José", "Criciúma", "Itajaí", "Chapecó", "Lages", "Jaraguá do Sul", "Palhoça"],
+            "RO": ["Porto Velho", "Ji-Paraná", "Ariquemes", "Vilhena", "Cacoal", "Jaru", "Guajará-Mirim", "Rolim de Moura", "Pimenta Bueno", "Ouro Preto do Oeste"],
+            "RS": ["Porto Alegre", "Caxias do Sul", "Pelotas", "Canoas", "Santa Maria", "Gravataí", "Viamão", "Novo Hamburgo", "São Leopoldo", "Rio Grande"],
+            "RN": ["Natal", "Mossoró", "Parnamirim", "Macaíba", "Ceará-Mirim", "Caicó", "Currais Novos", "Açu", "Apodi", "Nova Cruz"],
+            "PI": ["Teresina", "Parnaíba", "Picos", "Floriano", "Campo Maior", "Barras", "Piripiri", "José de Freitas", "Oeiras", "Pedro II"],
+            "PE": ["Recife", "Jaboatão dos Guararapes", "Olinda", "Caruaru", "Petrolina", "Paulista", "Cabo de Santo Agostinho", "Camaragibe", "Garanhuns", "Vitória de Santo Antão"],
+            "PR": ["Curitiba", "Londrina", "Maringá", "Ponta Grossa", "Cascavel", "São José dos Pinhais", "Foz do Iguaçu", "Colombo", "Guarapuava", "Paranaguá"],
+            "PA": ["Belém", "Ananindeua", "Santarém", "Marabá", "Castanhal", "Parauapebas", "Abaetetuba", "Cametá", "Marituba", "Bragança"],
+            "MG": ["Belo Horizonte", "Uberlândia", "Contagem", "Juiz de Fora", "Betim", "Montes Claros", "Ribeirão das Neves", "Uberaba", "Governador Valadares", "Ipatinga"],
+            "MS": ["Campo Grande", "Dourados", "Três Lagoas", "Corumbá", "Ponta Porã", "Naviraí", "Nova Andradina", "Sidrolândia", "Aquidauana", "Paranaíba"],
+            "ES": ["Vitória", "Vila Velha", "Serra", "Cariacica", "Cachoeiro de Itapemirim", "Linhares", "São Mateus", "Guarapari", "Colatina", "Aracruz"],
+            "BA": ["Salvador", "Feira de Santana", "Vitória da Conquista", "Camaçari", "Itabuna", "Juazeiro", "Lauro de Freitas", "Ilhéus", "Jequié", "Teixeira de Freitas"],
+            "AC": ["Rio Branco", "Cruzeiro do Sul", "Sena Madureira", "Tarauacá", "Feijó", "Plácido de Castro", "Senador Guiomard", "Brasiléia", "Manoel Urbano", "Xapuri"],
+            "GO": ["Goiânia", "Aparecida de Goiânia", "Anápolis", "Rio Verde", "Luziânia", "Águas Lindas de Goiás", "Valparaíso de Goiás", "Trindade", "Formosa", "Novo Gama"],
+            "DF": ["Brasília", "Ceilândia", "Gama", "Taguatinga", "Recanto das Emas", "Samambaia", "Santa Maria", "Sobradinho", "Planaltina", "Paranoá"]
+        };
+
+        var bairrosPorCidade = {
+            "São Paulo": ["Moema", "Pinheiros", "Vila Mariana", "Tatuapé", "Itaim Bibi"],
+            "Campinas": ["Cambuí", "Centro", "Taquaral", "Bonfim", "Barão Geraldo"],
+            "São José dos Campos": ["Jardim Aquarius", "Vila Ema", "Jardim Satélite", "Urbanova", "Vila Adyana"],
+            "Ribeirão Preto": ["Jardim Paulista", "Campos Elíseos", "Jardim Botânico", "Jardim Sumaré", "Vila Seixas"],
+            "Santo André": ["Centro", "Campestre", "Jardim", "Vila Assunção", "Parque das Nações"],
+            "Santos": ["Gonzaga", "Boqueirão", "Embaré", "Ponta da Praia", "Aparecida"],
+            "Guarulhos": ["Centro", "Vila Galvão", "Jardim Tranquilidade", "Cidade Seródio", "Jardim São João"],
+            "Osasco": ["Centro", "Jardim das Flores", "Presidente Altino", "Jardim Veloso", "Rochdale"],
+            "São Bernardo do Campo": ["Centro", "Rudge Ramos", "Baeta Neves", "Assunção", "Jardim do Mar"],
+            "Sorocaba": ["Centro", "Campolim", "Jardim Simus", "Vila Hortência", "Vila Santana"],
+            "Rio de Janeiro": ["Copacabana", "Ipanema", "Barra da Tijuca", "Tijuca", "Leblon"],
+            "Niterói": ["Icaraí", "Santa Rosa", "Centro", "Ingá", "Fonseca"],
+            "São Gonçalo": ["Centro", "Alcântara", "Colubandê", "Mutondo", "Neves"],
+            "Duque de Caxias": ["Centro", "Jardim Primavera", "Parque Lafaiete", "Parque Fluminense", "Jardim Leal"],
+            "Nova Iguaçu": ["Centro", "Miguel Couto", "Posse", "Comendador Soares", "Moquetá"],
+            "Belford Roxo": ["Centro", "Jardim Redentor", "Heliópolis", "Vilar dos Teles", "Shangrilá"],
+            "Campos dos Goytacazes": ["Centro", "Parque São Caetano", "Parque Leopoldina", "Jardim Carioca", "Guarus"],
+            "São João de Meriti": ["Centro", "Vilar dos Teles", "Jardim Meriti", "Jardim Sumaré", "Coelho da Rocha"],
+            "Petrópolis": ["Centro", "Itaipava", "Quitandinha", "Corrêas", "Bingen"],
+            "Volta Redonda": ["Aterrado", "Vila Santa Cecília", "Retiro", "Jardim Paraíba", "Nossa Senhora das Graças"],
+            "Florianópolis": ["Centro", "Trindade", "Coqueiros", "Saco dos Limões", "Estreito"],
+            "Joinville": ["Centro", "Boa Vista", "Atiradores", "Bucarein", "Anita Garibaldi"],
+            "Blumenau": ["Centro", "Velha", "Vila Nova", "Itoupava Seca", "Fortaleza"],
+            "São José": ["Centro", "Forquilhinhas", "Kobrasol", "Barreiros", "Campinas"],
+            "Criciúma": ["Centro", "Próspera", "Michel", "São Luiz", "Santa Bárbara"],
+            "Itajaí": ["Centro", "São João", "Dom Bosco", "Fazenda", "São Vicente"],
+            "Chapecó": ["Centro", "Passo dos Fortes", "Efapi", "Presidente Médici", "São Cristóvão"],
+            "Lages": ["Centro", "Coral", "Guarujá", "Sagrado Coração de Jesus", "São Miguel"],
+            "Jaraguá do Sul": ["Centro", "Barra do Rio Cerro", "Vila Lalau", "Nova Brasília", "Vila Lenzi"],
+            "Palhoça": ["Centro", "Pedra Branca", "Passa Vinte", "Aririu", "Belas Artes"],
+            "Porto Velho": ["Centro", "Pedrinhas", "Areal", "Nacional", "Jardim Eldorado"],
+            "Ji-Paraná": ["Centro", "Nova Brasília", "Jardim dos Migrantes", "Duque de Caxias", "Urupá"],
+            "Ariquemes": ["Setor 01", "Setor 02", "Setor 03", "Setor 04", "Setor 05"],
+            "Vilhena": ["Centro", "Bela Vista", "Jardim América", "Nova Vilhena", "Cristo Rei"],
+            "Cacoal": ["Centro", "Incra", "Floresta", "Teixeirão", "Vista Alegre"],
+            "Jaru": ["Setor 01", "Setor 02", "Setor 03", "Setor 04", "Setor 05"],
+            "Guajará-Mirim": ["Centro", "Jardim das Esmeraldas", "Santo Antônio", "10 de Abril", "Serraria"],
+            "Rolim de Moura": ["Beira Rio", "Nova Morada", "Centro", "São Cristóvão", "Boa Esperança"],
+            "Pimenta Bueno": ["Centro", "Jardim das Oliveiras", "Pioneer", "Jardim América", "Jardim das Palmeiras"],
+            "Ouro Preto do Oeste": ["Setor 01", "Setor 02", "Setor 03", "Setor 04", "Setor 05"],
+            "Porto Alegre": ["Centro", "Moinhos de Vento", "Belém Novo", "Tristeza", "Cristal"],
+            "Caxias do Sul": ["Centro", "Pioneiro", "Cristo Redentor", "Panazzolo", "Santa Catarina"],
+            "Pelotas": ["Centro", "Fragata", "Areal", "Três Vendas", "Simões Lopes"],
+            "Canoas": ["Centro", "Niterói", "Mathias Velho", "Estância Velha", "Marechal Rondon"],
+            "Santa Maria": ["Centro", "Nossa Senhora de Lourdes", "Nossa Senhora Medianeira", "Camobi", "Nossa Senhora das Dores"],
+            "Gravataí": ["Centro", "Barnabé", "Vera Cruz", "Passo das Pedras", "Neópolis"],
+            "Viamão": ["Centro", "Santa Isabel", "Tarumã", "Itapuã", "Santo Onofre"],
+            "Novo Hamburgo": ["Centro", "Canudos", "Rondônia", "Liberdade", "São Jorge"],
+            "São Leopoldo": ["Centro", "São Miguel", "Feitoria", "Scharlau", "Vicentina"],
+            "Rio Grande": ["Centro", "Cassino", "Cidade de Águeda", "Cidade de Portugal", "Cidade Nova"],
+            "Natal": ["Centro", "Petrópolis", "Candelária", "Lagoa Nova", "Tirol"],
+            "Mossoró": ["Centro", "Abolição", "Alto de São Manoel", "Santa Delmira", "Petrópolis"],
+            "Parnamirim": ["Centro", "Emaús", "Rosa dos Ventos", "Passagem de Areia", "Nova Parnamirim"],
+            "Macaíba": ["Centro", "Mangabeira", "Vila São José", "Vila São Francisco", "Vila Recreio"],
+            "Ceará-Mirim": ["Centro", "Primavera", "Cohab", "Santa Águeda", "Cidade Esperança"],
+            "Caicó": ["Centro", "Boa Passagem", "Paraíba", "Castelo Branco", "Maynard"],
+            "Currais Novos": ["Centro", "JK", "Paizinho Maria", "Parque Dourado", "Radir Pereira"],
+            "Açu": ["Centro", "Baixa de São Pedro", "Praça da Conceição", "Bairro Novo", "Novo Horizonte"],
+            "Apodi": ["Centro", "Bacurau", "Lagoa Seca", "IPE", "Córrego"],
+            "Nova Cruz": ["Centro", "Alto de São Sebastião", "Cruz das Armas", "Cabo de Santo Agostinho", "Cohab"],
+            "Teresina": ["Centro", "Aeroporto", "São Cristóvão", "Buenos Aires", "Ininga"],
+            "Parnaíba": ["Centro", "São Francisco da Guarita", "Pindorama", "Santa Luzia", "Santa Luzia"],
+            "Picos": ["Centro", "Junco", "Malva", "Paroquial", "Canto da Várzea"],
+            "Floriano": ["Centro", "Bairro de Fátima", "Tiberão", "Nossa Senhora da Guia", "Irapuá"],
+            "Campo Maior": ["Centro", "São João", "Aroeiras", "Lourival Parente", "Alto do Meio"],
+            "Barras": ["Centro", "São Cristóvão", "São Francisco", "Boa Fé", "Pedrinhas"],
+            "Piripiri": ["Centro", "Floresta", "Prado", "Matadouro", "Vila Nova"],
+            "José de Freitas": ["Centro", "Suco de Uva", "Tijuca", "Santa Rosa", "Belas"],
+            "Oeiras": ["Centro", "Pio XII", "Oeiras Nova", "Bela Vista", "Canela"],
+            "Pedro II": ["Centro", "Santa Fé", "Santa Rita", "São Francisco", "São José"],
+            "Recife": ["Boa Viagem", "Boa Vista", "Campo Grande", "Madalena", "Afogados"],
+            "Jaboatão dos Guararapes": ["Piedade", "Candeias", "Barra de Jangada", "Socorro", "Cavaleiro"],
+            "Olinda": ["Bairro Novo", "Carmo", "Amparo", "São Benedito", "Rio Doce"],
+            "Caruaru": ["Maurício de Nassau", "Salgado", "Indianópolis", "Centenário", "Vassoural"],
+            "Petrolina": ["Centro", "Atrás da Banca", "Vila Eduardo", "Jardim Amazonas", "Jardim Guararapes"],
+            "Paulista": ["Centro", "Janga", "Maranguape I", "Maranguape II", "Jardim Paulista"],
+            "Cabo de Santo Agostinho": ["Centro", "Ponte dos Carvalhos", "Gaibu", "Enseada dos Corais", "Ponte dos Carvalhos"],
+            "Camaragibe": ["Centro", "São Tomé", "Timbi", "Aldeia", "Vila da Fábrica"],
+            "Garanhuns": ["Centro", "Heliópolis", "Boa Vista", "São José", "Magano"],
+            "Vitória de Santo Antão": ["Centro", "Jardim Ipiranga", "Livramento", "Água Branca", "Bela Vista"],
+            "Curitiba": ["Centro", "Batel", "Água Verde", "Boqueirão", "Cajuru"],
+            "Londrina": ["Centro", "Gleba Palhano", "Jardim Shangri-lá", "São Jorge", "Ipanema"],
+            "Maringá": ["Zona 07", "Centro", "Zona 04", "Vila Nova", "Zona 03"],
+            "Ponta Grossa": ["Centro", "Uvaranas", "Nova Rússia", "Oficinas", "Neves"],
+            "Cascavel": ["Centro", "Coqueiral", "Cancelli", "Pioneiros Catarinenses", "Neva"],
+            "São José dos Pinhais": ["Centro", "Afonso Pena", "Cidade Jardim", "Boneca do Iguaçu", "Guatupê"],
+            "Foz do Iguaçu": ["Centro", "Vila Yolanda", "Porto Belo", "Jardim Lancaster", "Jardim São Paulo"],
+            "Colombo": ["Centro", "Maracanã", "Roça Grande", "Atuba", "São Gabriel"],
+            "Guarapuava": ["Centro", "Bonsucesso", "Alto Cascavel", "Santana", "São Cristóvão"],
+            "Paranaguá": ["Centro", "Palmital", "Vila Guarani", "Jardim Araçá", "Porto Seguro"],
+            "Belém": ["Umarizal", "Batista Campos", "Nazaré", "Jurunas", "Cremação"],
+            "Ananindeua": ["Centro", "Cidade Nova", "Águas Lindas", "Júlia Seffer", "Águas Brancas"],
+            "Santarém": ["Centro", "Aldeia", "Aeroporto Velho", "Mapiri", "Prainha"],
+            "Marabá": ["Nova Marabá", "São Félix", "Amapá", "Cidade Nova", "São Miguel"],
+            "Castanhal": ["Centro", "São José", "Estrela", "Matinha", "Cristo Redentor"],
+            "Parauapebas": ["Cidade Nova", "Rio Verde", "Beira Rio", "Altamira", "Vila Planalto"],
+            "Abaetetuba": ["Centro", "Aurora", "Vila Nova", "São Francisco", "Novo Horizonte"],
+            "Cametá": ["Centro", "Açaizal", "Santa Catarina", "Novo Horizonte", "Vila Nova"],
+            "Marituba": ["Centro", "Novo Horizonte", "Dom Aristides", "Parque Jatobá", "Vila Formosa"],
+            "Bragança": ["Centro", "Bela Vista", "Santa Lúcia", "Jaderlândia", "Cidade Alta"],
+            "Belo Horizonte": ["Centro", "Savassi", "Barro Preto", "Santa Efigênia", "Funcionários"],
+            "Uberlândia": ["Centro", "Santa Mônica", "Jaraguá", "Tibery", "Martins"],
+            "Contagem": ["Eldorado", "Riacho das Pedras", "Alvorada", "Fonte Grande", "Cinco"],
+            "Juiz de Fora": ["Centro", "Benfica", "São Mateus", "São Pedro", "Granbery"],
+            "Betim": ["Centro", "Vila Cristina", "Jardim Teresópolis", "Distrito Industrial", "Imbiruçu"],
+            "Montes Claros": ["Centro", "Major Prates", "Jardim São Geraldo", "Vila Regina", "Jaraguá"],
+            "Ribeirão das Neves": ["São Januário", "Flores", "Esplanada", "São Geraldo", "Veneza"],
+            "Uberaba": ["Centro", "São Benedito", "São Cristóvão", "Mercês", "Fabrício"],
+            "Governador Valadares": ["Centro", "Vila Isa", "São Paulo", "Nossa Senhora das Graças", "São Pedro"],
+            "Ipatinga": ["Centro", "Cidade Nobre", "Bom Jardim", "Veneza", "Vila Celeste"],
+            "Campo Grande": ["Centro", "Jardim dos Estados", "Tiradentes", "Vila Sobrinho", "Vila Bandeirante"],
+            "Dourados": ["Centro", "Jardim Água Boa", "Parque Alvorada", "Jardim América", "Jardim Flórida"],
+            "Três Lagoas": ["Centro", "Jardim Alvorada", "Jardim Angélica", "Vila Nova", "Vila Haro"],
+            "Corumbá": ["Centro", "Dom Bosco", "Cristo Redentor", "Guató", "Popular Nova"],
+            "Ponta Porã": ["Centro", "Jardim Primor", "Jardim América", "Jardim dos Estados", "Jardim Panambi"],
+            "Naviraí": ["Centro", "Jardim Paraíso", "Vila Operária", "Jardim Progresso", "Jardim Paraíso"],
+            "Nova Andradina": ["Centro", "Alvorada", "Vila Beatriz", "Durval Andrade Filho", "Vila Operária"],
+            "Sidrolândia": ["Centro", "Bairro São Bento", "Vila São Bento", "Serradinho", "Vila Popular"],
+            "Aquidauana": ["Centro", "Nova Aquidauana", "São Francisco", "Vila Santa Terezinha", "Vila Pinheiro"],
+            "Paranaíba": ["Centro", "Jardim América", "São Cristóvão", "Jardim Primavera", "Vila Maria"],     
+            "Vitória": ["Jardim da Penha", "Praia do Canto", "Jardim Camburi", "Bairro República", "Ilha do Frade"],
+            "Vila Velha": ["Itapuã", "Coqueiral de Itaparica", "Centro", "Glória", "Praia da Costa"],
+            "Serra": ["Laranjeiras", "Jacaraípe", "Carapina", "Jardim Limoeiro", "Nova Almeida"],
+            "Cariacica": ["Campo Grande", "Alto Lage", "Porto de Santana", "São Geraldo", "Nova Rosa da Penha"],
+            "Cachoeiro de Itapemirim": ["Centro", "Gilson Carone", "Aeroporto", "BNH de Baixo", "BNH de Cima"],
+            "Linhares": ["Centro", "Interlagos", "Três Barras", "Novo Horizonte", "Movelar"],
+            "São Mateus": ["Centro", "Guriri", "Vila Nova", "Porto", "Boa Vista"],
+            "Guarapari": ["Centro", "Muquiçaba", "Meaípe", "Santa Mônica", "Praia do Morro"],
+            "Colatina": ["Centro", "Honório Fraga", "Ayrton Senna", "Carlos Germano Naumann", "Vila Nova"],
+            "Aracruz": ["Centro", "Coqueiral", "Santa Cruz", "Barra do Riacho", "Itaparica"],
+            "Salvador": ["Barra", "Pituba", "Itaigara", "Rio Vermelho", "Graça"],
+            "Feira de Santana": ["Centro", "Sobradinho", "Papagaio", "Jardim Cruzeiro", "Feira X"],
+            "Vitória da Conquista": ["Centro", "Boa Vista", "Candeias", "Patagônia", "Brasil"],
+            "Camaçari": ["Centro", "Abrantes", "Monte Gordo", "Ponto Certo", "Parafuso"],
+            "Itabuna": ["Centro", "São Caetano", "Fátima", "Jaçanã", "São Judas"],
+            "Juazeiro": ["Centro", "Alagadiço", "Jardim Flórida", "Castelo Branco", "Itaberaba"],
+            "Lauro de Freitas": ["Centro", "Itinga", "Vilas do Atlântico", "Areia Branca", "Jambeiro"],
+            "Ilhéus": ["Centro", "Cidade Nova", "Malhado", "Nossa Senhora da Vitória", "Salobrinho"],
+            "Jequié": ["Centro", "Cidade Nova", "João XXIII", "São Judas Tadeu", "Vila Isabel"],
+            "Teixeira de Freitas": ["Centro", "Vila Vargas", "Jardim Caraípe", "Castelinho", "Loteamento Redenção"],
+            "Rio Branco": ["Centro", "Bosque", "Capoeira", "Bairro da Paz", "Vila Ivonete"],
+            "Cruzeiro do Sul": ["Centro", "Bairro do Telégrafo", "Remanso", "Bairro do Alumínio", "Miritizal"],
+            "Sena Madureira": ["Centro", "Bairro da Pista", "Bairro do Bosque", "Bairro da Vitória", "Bairro da Pista"],
+            "Tarauacá": ["Centro", "Bairro Corcovado", "Bairro do Triângulo", "Bairro Triângulo", "Bairro do Corcovado"],
+            "Feijó": ["Centro", "Bairro do Bosque", "Bairro do Triângulo", "Bairro Triângulo", "Bairro do Corcovado"],
+            "Plácido de Castro": ["Centro", "Bairro do Bosque", "Bairro do Triângulo", "Bairro Triângulo", "Bairro do Corcovado"],
+            "Senador Guiomard": ["Centro", "Bairro do Bosque", "Bairro do Triângulo", "Bairro Triângulo", "Bairro do Corcovado"],
+            "Brasiléia": ["Centro", "Bairro do Bosque", "Bairro do Triângulo", "Bairro Triângulo", "Bairro do Corcovado"],
+            "Manoel Urbano": ["Centro", "Bairro do Bosque", "Bairro do Triângulo", "Bairro Triângulo", "Bairro do Corcovado"],
+            "Xapuri": ["Centro", "Bairro do Bosque", "Bairro do Triângulo", "Bairro Triângulo", "Bairro do Corcovado"],
+            "Goiânia": ["Setor Bueno", "Setor Marista", "Setor Oeste", "Jardim Goiás", "Setor Sul"],
+            "Aparecida de Goiânia": ["Setor Central", "Jardim Luz", "Vila Brasília", "Setor Garavelo", "Setor Buriti Sereno"],
+            "Anápolis": ["Jundiaí", "Setor Central", "Bairro de Lourdes", "Setor Norte Ferroviário", "Jardim das Oliveiras"],
+            "Rio Verde": ["Popular", "Promissão", "Popular Nova", "Vila Amália", "Vila Maria"],
+            "Luziânia": ["Parque Alvorada", "Centro", "Jardim Ingá", "Setor Industrial", "Jardim Luz"],
+            "Águas Lindas de Goiás": ["Jardim Barragem II", "Jardim América II", "Setor 11", "Setor 5", "Jardim Pérola"],
+            "Valparaíso de Goiás": ["Parque Marajó", "Jardim Oriente", "Jardim Céu Azul", "Setor de Chácaras Anhangüera B", "Jardim Ipanema"],
+            "Trindade": ["Setor Central", "Setor Maysa", "Setor St. 3", "Jardim Marista", "Setor Lago dos Buritis"],
+            "Formosa": ["Setor Central", "Setor Nordeste", "Setor Sul", "Setor Oeste", "Setor Norte"],
+            "Novo Gama": ["Setor Central", "Setor Leste", "Setor Oeste", "Setor Norte", "Setor Sul"],
+            "Brasília": ["Asa Sul", "Asa Norte", "Lago Sul", "Lago Norte", "Sudoeste"],
+            "Ceilândia": ["Ceilândia Sul", "Ceilândia Norte", "QNN", "QNP", "Setor O"],
+            "Gama": ["Setor Central", "Setor Leste", "Setor Oeste", "Setor Sul", "Setor Norte"],
+            "Taguatinga": ["Taguatinga Norte", "Taguatinga Sul", "Águas Claras", "Arniqueiras", "Areal"],
+            "Recanto das Emas": ["Recanto das Emas I", "Recanto das Emas II", "Recanto das Emas III", "Recanto das Emas IV", "Recanto das Emas V"],
+            "Samambaia": ["Samambaia Sul", "Samambaia Norte", "QN 314", "QN 516", "QN 208"],
+            "Santa Maria": ["Santa Maria Sul", "Santa Maria Norte", "Santa Maria Leste", "Santa Maria Oeste", "Santa Maria Centro"],
+            "Sobradinho": ["Sobradinho I", "Sobradinho II", "Sobradinho III", "Sobradinho IV", "Sobradinho Centro"],
+            "Planaltina": ["Planaltina Centro", "Setor Tradicional", "Planaltina Norte", "Planaltina Sul", "Vila Buritis"],
+            "Paranoá": ["Paranoá Centro", "Setor Tradicional", "Estância Paranoá", "Vila Nova", "Vila Buritis"],                                           
+        };
+
+        var estadoSelecionado = estados[Math.floor(Math.random() * estados.length)];
+        var cidadeSelecionada = cidadesPorEstado[estadoSelecionado][Math.floor(Math.random() * cidadesPorEstado[estadoSelecionado].length)];
+        var bairrosDaCidade = bairrosPorCidade[cidadeSelecionada];
+        var bairroSelecionado = bairrosDaCidade[Math.floor(Math.random() * bairrosDaCidade.length)];
+
+        var campos = {
+            nome: document.getElementById("input_nome"),
+            cpf: document.getElementById("input_cpf"),
+            dataNascimento: document.getElementById("input_nascimento"),
+            email: document.getElementById("input_email"),
+            logradouro: document.getElementById("input_logradouro"),
+            numero: document.getElementById("input_numero"),
+            cep: document.getElementById("input_cep"),
+            cidade: document.getElementById("input_cidade"),
+            bairro: document.getElementById("input_bairro"),
+            mae: document.getElementById("input_nome_mae"),
+            uf: document.getElementById("input_UF"),
+            telefone: document.getElementById("input_fone")
+        };
+        
+        campos.nome.value = nome;
+        campos.cpf.value = cpf;
+        campos.dataNascimento.value = dataNascimento;
+        campos.email.value = email;
+        campos.numero.value = numero;
+        campos.logradouro.value = logradouro;
+        campos.cep.value = cep;
+        campos.mae.value = mae;
+        campos.cidade.value = cidadeSelecionada;
+        campos.bairro.value = bairroSelecionado;
+        campos.uf.value = estadoSelecionado;
+        campos.telefone.value = telefone;
+        
+        var submitButton = document.querySelector('.btn.mb-2.btn-primary');
+        
+        if (submitButton) {
+            var form = document.querySelector('.needs-validation');
+            
+            if (form) {
+                form.submit();
+            }
+        }
+    }
+
+    function gerarEmailAleatorio(nome) {
+        var emailAleatorio = nome.toLowerCase().replace(/ /g, '').substring(0, 6);
+        emailAleatorio += Math.random().toString(36).substring(2, 8);
+        emailAleatorio += "@gmail.com";
+        return emailAleatorio;
+    }
+})();
