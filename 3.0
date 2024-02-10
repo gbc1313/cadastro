@@ -1,4 +1,4 @@
-javascript:(function() {
+(function() {
     var botao = document.querySelector('.btn.btn-primary.float-right.ml-3');
     
     if (botao) {
